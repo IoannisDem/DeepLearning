@@ -2,12 +2,15 @@ import torch
 import torch.nn as nn
 from models import encoder, decoder, distributions
 
+
 class VAE(nn.Module):
     def __init__(self, channels_dim, latent_dim=32, feature_size=7):
         super().__init__()
         self._encoder = encoder.SimpleEncoder(channels_dim)
         _reverse_channels_dim = channels_dim[::-1]
-        self._decoder = decoder.SimpleDecoder(latent_dim, feature_size, _reverse_channels_dim)
+        self._decoder = decoder.SimpleDecoder(
+            latent_dim, feature_size, _reverse_channels_dim
+        )
 
         flat_dim = channels_dim[-1] * feature_size * feature_size
         self._x_mean_layer = nn.Linear(flat_dim, latent_dim)
