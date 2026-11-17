@@ -14,4 +14,4 @@ class VAELoss(nn.Module):
         kl_loss = (
             -0.5 * torch.sum(1 + z_log_var - z_mean**2 - z_log_var.exp(), dim=1).mean()
         )
-        return reconstruction_loss + kl_loss
+        return reconstruction_loss + kl_loss, reconstruction_loss, kl_loss

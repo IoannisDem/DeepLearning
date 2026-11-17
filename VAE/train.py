@@ -17,30 +17,43 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, step):
         x = x.to(device)
         optimizer.zero_grad()
         x_reconstructed, z_mean, z_log_var = model(x)
-        loss = loss_fn(x, x_reconstructed, z_mean, z_log_var)
+        loss, mse, kl = loss_fn(x, x_reconstructed, z_mean, z_log_var)
         loss.backward()
         optimizer.step()
         step += 1
         if batch % 100 == 0:
-            wandb.log({"train/loss": loss.item()}, step=step)
+            wandb.log(
+                {
+                    "train/loss": loss.item(),
+                    "train/mse": mse.item(),
+                    "train/kl": kl.item(),
+                },
+                step=step,
+            )
     return step
 
 
 def validation_loop(model, dataloader, loss_fn, device, step, epoch):
     model.eval()
     total_loss = 0.0
+    total_mse = 0.0
+    total_kl = 0.0
     num_batches = 0
     for x, _ in dataloader:
         x = x.to(device)
         with torch.no_grad():
             x_reconstructed, z_mean, z_log_var = model(x)
-            loss = loss_fn(x, x_reconstructed, z_mean, z_log_var)
+            loss, mse, kl = loss_fn(x, x_reconstructed, z_mean, z_log_var)
             total_loss += loss.item()
+            total_mse += mse.item()
+            total_kl += kl.item()
             num_batches += 1
     average_loss = total_loss / num_batches
     wandb.log(
         {
             "val/loss": average_loss,
+            "val/mse": total_mse / num_batches,
+            "val/kl": total_kl / num_batches,
             "epoch": epoch,
             "val/reconstructions": [
                 wandb.Image(image * 255) for image in x_reconstructed[:8].detach().cpu()
