@@ -43,7 +43,7 @@ def validation_loop(model, dataloader, loss_fn, device, step, epoch):
             "val/loss": average_loss,
             "epoch": epoch,
             "val/reconstructions": [
-                wandb.Image(image) for image in x_reconstructed[:8].detach().cpu()
+                wandb.Image(image * 255) for image in x_reconstructed[:8].detach().cpu()
             ],
         },
         step=step,
@@ -59,7 +59,7 @@ def main():
     latent_dim = 32
     batch_size = 32
     learning_rate = 0.001
-    epochs = 1
+    epochs = 10
 
     model = vae.VAE(channels_dim, latent_dim=latent_dim)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
