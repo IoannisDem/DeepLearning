@@ -25,6 +25,7 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, step):
             wandb.log({"train/loss": loss.item()}, step=step)
     return step
 
+
 def validation_loop(model, dataloader, loss_fn, device, step, epoch):
     model.eval()
     total_loss = 0.0
