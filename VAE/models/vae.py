@@ -16,10 +16,10 @@ class VAE(nn.Module):
         self._x_mean_layer = nn.Linear(flat_dim, latent_dim)
         self._x_log_var_layer = nn.Linear(flat_dim, latent_dim)
 
-    def forward(self, x):
+    def forward(self, x, sample=True):
         x = self._encoder(x)
         z_mean = self._x_mean_layer(x)
         z_log_var = self._x_log_var_layer(x)
-        z = distributions.reparametrize(z_mean, z_log_var)
+        z = distributions.reparametrize(z_mean, z_log_var) if sample else z_mean
         x_reconstructed = self._decoder(z)
         return x_reconstructed, z_mean, z_log_var

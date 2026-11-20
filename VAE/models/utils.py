@@ -20,10 +20,10 @@ class UpConvBlock(nn.Module):
         self,
         in_channels,
         out_channels,
-        kernel_size=3,
+        kernel_size=4,
         stride=2,
         padding=1,
-        output_padding=1,
+        output_padding=0,
     ):
         super().__init__()
         self._up_conv_layer = nn.Sequential(
